@@ -1,0 +1,148 @@
+@media only screen and (max-width: 1300px) {
+   .container {
+      max-width: 1200px;
+  }
+}
+
+
+
+body {
+   background:#f2f2f2
+}
+.content {
+   display:flex;
+   width:100%;
+}
+
+.header {
+   display:flex;
+}
+
+.headerTitle {
+   margin-bottom:1em;
+}
+
+.connection {
+   border-bottom:#d9d0c3 solid 1px;
+   padding-left:0.5em;
+}
+
+.connection span, a {
+   padding-left:1em;
+}
+
+.mainContent {
+   max-width:100%;
+   padding: 1em;
+   margin-left: 1rem;
+   font-family:"Lucida Console", Monaco, monospace;
+}
+
+
+#printer, .market-panel {
+   margin-bottom:1rem;
+   border: 1px solid #ccc;
+}
+
+.contract-panel {
+   border: 1px solid black;
+   margin-top: 1rem;
+   padding: 15px;
+}
+
+.contract-panel input, textarea {
+   width:75%;
+}
+
+.contract-panel h6 {
+   font-size:14px;
+   margin-bottom:0rem;
+}
+
+.contract-method {
+   padding-top:1rem;
+   text-align:right;
+}
+
+.contract-method input{
+   width:55%;
+}
+
+.btn {
+   margin-top: 5px;
+   margin-bottom: 5px;
+   font-size:12px;
+   font-weight:bold;
+}
+
+.trade-panel {
+   margin-bottom:2.5em;
+}
+
+.dashboard-section {
+   display:flex;
+   border:1px solid grey;
+}
+
+
+.dashboard-section {
+   margin:auto;
+   padding:1em;
+}
+
+.liquidity-panel input {
+   width:70%;
+   margin-right: 0.5em;
+}
+
+.liquidity-input {
+   flex:100%
+}
+
+
+.market-panel h4 {
+   text-align:center;
+   padding: 1em 0 0.5em 0;
+}
+
+.market-panel h6 {
+   display: inline;
+}
+
+.panel-label {
+   text-align:left;
+   font-weight:bold;
+   font-size:1em;
+   margin-bottom:0.3rem;
+   padding-left:0.5em;
+}
+
+.market-dashboard, .market-info {
+   padding-left:1em;
+}
+
+.outcome-values {
+   width:50%;
+}
+
+.outcome-values-outcome {
+   display:flex;
+   justify-content: space-between;
+}
+
+.outcome-values-outcome .panel-label {
+   padding-left:1em;
+}
+
+.trade-input {
+   margin-bottom: 1em;
+   padding:1em;
+}
+
+.trade-panel input {
+   margin-right: 0.5em;
+}
+
+.maxBtn {
+   padding: 0em;
+}

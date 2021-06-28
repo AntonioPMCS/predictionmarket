@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" data-is-home="false" data-is-mobile="false" data-supports-vr="false" data-supports-touch="false">
+
+<head>
+  <title>PreSaga Administrator Panel</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="./index.css">
+</head>
+
+<body class='container'>
+
+  <section class="header">
+    <div class="headerTitle">
+      <h1 style="padding-left:0.5em;"> PreSaga BETA</h1>
+      <div class='connection'>
+        <a id ="connectBtn" href='#' onclick="_loadTestCondition()" class="btn btn-primary">connect</a>
+        <span id="connectedNetwork">Network</span>
+        <span id="connectedAddress">Address</span>
+      </div>
+      <nav class="navbar navbar-expand-md navbar-light">
+        <div id="navbar" class="navbar-nav"> 
+          <script language="javascript" type="text/javascript" src="./navbar.js"></script>
+        </div>
+      </nav>
+    </div>
+  </section>
+
+  <section class='content'>
+
+    <div class="mainContent">
+      <h3> Active markets</h3>
+      <table class="table">
+        <thead id="OPENmarketsBoardHead">
+          <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Liquidity</th>
+            <th scope="col">Yes</th>
+            <th scope="col">No</th>
+            <th scope="col">Expiration</th>
+          </tr>
+        </thead>
+        <tbody id="OPENmarketsBoardBody">
+          <tr>
+            <th scope="row">Market Title</th>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <br>
+
+      <h3> Closed markets</h3>
+      <table class="table">
+        <thead id="CLOSEDmarketsBoardHead">
+          <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Liquidity</th>
+            <th scope="col">Yes</th>
+            <th scope="col">No</th>
+            <th scope="col">Expiration</th>
+          </tr>
+        </thead>
+        <tbody id="CLOSEDmarketsBoardBody">
+          <tr>
+            <th scope="row">Market Title</th>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
+          </tr>
+        </tbody>
+      </table>
+      
+    </div>
+  </section>
+
+</body>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script language="javascript" type="text/javascript" src="./blockchain/abi/fpmmfactory_abi.js"></script>
+<script language="javascript" type="text/javascript" src="./blockchain/abi/conditionaltokens_abi.js"></script>
+<script language="javascript" type="text/javascript" src="./blockchain/abi/collateraltoken_abi.js"></script>
+<script language="javascript" type="text/javascript" src="./blockchain/abi/fpmm_abi.js"></script>
+<script language="javascript" type="text/javascript" src="./Session.js"></script>
+<script language="javascript" type="text/javascript" src="./blockchain/conditionalTokens.js"></script>
+<script language="javascript" type="text/javascript" src="./blockchain/Contract.js"></script>
+<script language="javascript" type="text/javascript" src="./blockchain/MarketMaker.js"></script>
+<script language="javascript" type="text/javascript" src="./blockchain/MarketMakerFactory.js"></script>
+<script language="javascript" type="text/javascript" src="./constants.js"></script>
+<script language="javascript" type="text/javascript" src="./db/markets.js"></script>
+<script language="javascript" type="text/javascript" src="./node_modules/big.js/big.js"></script>
+<script language="javascript" type="text/javascript" src="./math/newton-raphson-method.js"></script>
+<script language="javascript" type="text/javascript" src="./math/bignumber.min.js"></script>
+<script language="javascript" type="text/javascript" src="./markets.js"></script>
+</html>
