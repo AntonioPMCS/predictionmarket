@@ -12,10 +12,7 @@
   <section class="header">
     <div class="headerTitle">
       <h1 style="padding-left:0.5em;"> PreSaga BETA</h1>
-      <div class='connection'>
-        <a id ="connectBtn" href='#' onclick="_loadTestCondition()" class="btn btn-primary">connect</a>
-        <span id="connectedNetwork">Network</span>
-        <span id="connectedAddress">Address</span>
+      <div id='connectionBar'>
       </div>
       <nav class="navbar navbar-expand-md navbar-light">
         <div id="navbar" class="navbar-nav"> 
@@ -37,6 +34,7 @@
             <th scope="col">Yes</th>
             <th scope="col">No</th>
             <th scope="col">Expiration</th>
+            <th scope="col">Operations</th>
           </tr>
         </thead>
         <tbody id="OPENmarketsBoardBody">
@@ -45,6 +43,7 @@
             <td>Mark</td>
             <td>Otto</td>
             <td>@mdo</td>
+            <td>Update, Close</td>
           </tr>
         </tbody>
       </table>
@@ -91,9 +90,10 @@
 <script language="javascript" type="text/javascript" src="./blockchain/MarketMaker.js"></script>
 <script language="javascript" type="text/javascript" src="./blockchain/MarketMakerFactory.js"></script>
 <script language="javascript" type="text/javascript" src="./constants.js"></script>
-<script language="javascript" type="text/javascript" src="./db/markets.js"></script>
+<script language="javascript" type="text/javascript" src="./db/DB.js"></script>
 <script language="javascript" type="text/javascript" src="./node_modules/big.js/big.js"></script>
 <script language="javascript" type="text/javascript" src="./math/newton-raphson-method.js"></script>
 <script language="javascript" type="text/javascript" src="./math/bignumber.min.js"></script>
 <script language="javascript" type="text/javascript" src="./markets.js"></script>
+<script language="javascript" type="text/javascript" src="../connectionBar.js"></script>
 </html>

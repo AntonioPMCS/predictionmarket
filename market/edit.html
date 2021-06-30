@@ -13,10 +13,7 @@
   <section class="header">
     <div class="headerTitle">
       <h1 style="padding-left:0.5em;"> PreSaga BETA</h1>
-      <div class='connection'>
-        <a id ="connectBtn" href='#' onclick="javascript:void(0);" class="btn btn-primary">connect</a>
-        <span id="connectedNetwork">Network</span>
-        <span id="connectedAddress">Address</span>
+      <div id='connectionBar'>
       </div>
       <nav class="navbar navbar-expand-md navbar-light">
         <div id="navbar" class="navbar-nav">
@@ -26,29 +23,42 @@
     </div>
   </section>
   
-  <section class='content'>
-    <div class='web3-interface' style="width:50%; text-align:center">
-      <div class="newMarketForm contract-panel">
-        <h2>New Market</h2>
-          <label for="MarketQuestion">Question:</label><br>
-          <input type="text" maxlength="32" id="newMarketQuestion" name="MarketQuestion"><br>
-          <label for="MarketTitle">Title:</label><br>
-          <input type="text" id="newMarketTitle" name="MarketTitle"><br>
-          <label for="MarketDesc">Description:</label><br>
-          <textarea id="newMarketDesc" name="MarketDesc"></textarea><br>
-          <label for="MarketRes">Resolution Source:</label><br>
-          <input type="text" id="newMarketRes" name="MarketRes"><br>
-          <label for="MarketOracle">Oracle Address:</label><br>
-          <input type="text" id="newMarketOracle" name="MarketOracle"><br>
-          <label for="MarketLiquidity">Initial Liquidity:</label><br>
-          <input type="text" id="newMarketLiquidity" name="MarketLiquidity"><br>
-          <label for="MarketEndDate">End Date:</label><br>
-          <input type="text" id="newMarketEndDate" value="Wed June 30 2021 23:59:59 GMT+0000 (Western European Standard Time)" name="MarketEndDate"><br>
-          <a href='javascript:;' onclick="_createMarket()" class="btn btn-primary">Create Market</a>
-      </div>
+  <section class=''>
+    <div class="Instructions">
+      <h2>Edit Market</h2>
+      <p>
+        Changes made here are stored off-chain. 
+        The only information stored on-chain are the market IDs, which cannot be edited.
+      </p>
     </div>
-  </section>
+    <div class="contract-panel">
+      <h3 id="resolveMarketTitle"></h3>
+        <p class="panel-label">Title</p>
+        <p id="marketTitle"></p>
+        <p class="panel-label">ConditionId</p>
+        <p id="marketConditionId"></p>
         
+        <label for="MarketTitle">Title:</label><br>
+        <input type="text" id="editTitle" name="MarketTitle"><br>
+
+        <label for="MarketDescription">Description:</label><br>
+        <input type="text" id="editDescription" name="MarketDescription"><br>
+
+        <label for="MarketResSource">Resolution Source:</label><br>
+        <input type="text" id="editResSource" name="MarketResSource"><br>
+
+        <label for="MarketEndDate">End Date:</label><br>
+        <input type="text" id="editEndDate" name="MarketEndDate"><br>
+
+        <label for="MarketState">State:</label><br>
+        <select name="state" id="editState">
+          <option value="OPEN">Open</option>
+          <option value="CLOSED">Closed</option>
+        </select><br>
+      
+        <a href='javascript:;' onclick="_editMarket()" class="btn btn-primary">Submit Changes</a>
+    </div>
+  </section>      
 </body>
 
 
@@ -61,14 +71,15 @@
 <script language="javascript" type="text/javascript" src="../blockchain/abi/collateraltoken_abi.js"></script>
 <script language="javascript" type="text/javascript" src="../blockchain/abi/fpmm_abi.js"></script>
 <script language="javascript" type="text/javascript" src="../Session.js"></script>
-<script language="javascript" type="text/javascript" src="../blockchain/conditionalTokens.js"></script> -->
+<script language="javascript" type="text/javascript" src="../blockchain/conditionalTokens.js"></script>
 <script language="javascript" type="text/javascript" src="../blockchain/Contract.js"></script>
 <script language="javascript" type="text/javascript" src="../blockchain/MarketMakerFactory.js"></script>
 <script language="javascript" type="text/javascript" src="../constants.js"></script>
-<script language="javascript" type="text/javascript" src="../db/markets.js"></script>
+<script language="javascript" type="text/javascript" src="../db/DB.js"></script>
 <script language="javascript" type="text/javascript" src="../node_modules/big.js/big.js"></script>
 <script language="javascript" type="text/javascript" src="../math/bignumber.min.js"></script>
 <script language="javascript" type="text/javascript" src="../math/newton-raphson-method.js"></script>
-<script src="./newMarket.js"></script> 
+<script src="./editMarket.js"></script> 
+<script language="javascript" type="text/javascript" src="../connectionBar.js"></script>
 
 </html>

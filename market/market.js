@@ -1,40 +1,23 @@
 var market;
 var condition;
-var currentAccount;
 var session;
 
 function _loadMarket(market) {
-  printCondition(market)
-  _loadMM(market.fpmm)
-  _updateMMBalances(market.fpmm.getAddress())
+  printCondition(market);
+  _loadMM(market.fpmm);
+  _updateMMBalances(market.fpmm.getAddress());
 }
 
-
-$(document).ready(async () => {
-  session = new Session();
-  // This design pattern overcomes the limitations of not being able to 
-  // run async operations inside an object's constructor
-  session.init(() => {
-    console.log("Account: "+session.getAccount());
-    console.log("Chain: "+session.getChain());
-
-    document.getElementById("connectedAddress").innerHTML = session.getAccount();
-    document.getElementById("connectBtn").style.display="none";
-
-    document.getElementById("connectedNetwork").innerHTML = session.getChain();
-
-    session.getTokenContract().methods.balanceOf(session.getAccount()).call()
-     .then(res => { console.log(`Logged account ${TOKENNAME} balance: `, web3.utils.fromWei(res))})
-
-     $("#output").append(`<br> // ${TOKENNAME} address: `+COLLATERALTOKENCONTRACT+"<br>");
-  });
-
+// Page init is called at $document.onReady by connectionBar.js
+function pageInit() {
+  $("#output").append(`<br> // ${TOKENNAME} address: `+COLLATERALTOKENCONTRACT+"<br>");
 
   const urlParams = new URLSearchParams(window.location.search);
   console.log(urlParams.get('questionId'))
   market = {
     conditionId: urlParams.get('conditionId'),
     questionId: urlParams.get('questionId'),
+    title: urlParams.get('title'),
     fpmm: new MarketMaker(fpmmABI, urlParams.get('fpmm')),
     positions: {
       collateralNo: urlParams.get('noPositionId'),
@@ -43,10 +26,12 @@ $(document).ready(async () => {
   }
   console.log(market);  
   _loadMarket(market);
-});
+}
+
 
 function printCondition(condition) {
   document.getElementById("marketConditionId").innerText = condition.conditionId;
+  document.getElementById("marketTitle").innerText = condition.title;
   
   $("#output").append("<br> // -> Condition ID: "+condition.conditionId+"<br>");
   //$("#output").append("<br> // -> Collection ( YES ) ID: "+condition.collections.yes);
@@ -95,16 +80,15 @@ function _updateMMBalances(mmAccount = market.fpmm.getAddress()) {
 
 function _getAccPosition(outcomeIndex) {
   let positionId;
-  let elementId;
   if (outcomeIndex === YESINDEX) {
-    positionId = condition.positions.collateralYes;
+    positionId = market.positions.collateralYes;
     outcome = "Yes"
   } else {
-    positionId = condition.positions.collateralNo;
+    positionId = market.positions.collateralNo;
     outcome = "No"
   }
   
-  getAccPosition(currentAccount, positionId)
+  getAccPosition(session.getAccount(), positionId)
   .then(res => {
     document.getElementById("Sell"+outcome+"Shares").value = web3.utils.fromWei(res);
     _calcSellCollateral(document.getElementById("Sell"+outcome+"Shares"), outcomeIndex);
@@ -112,10 +96,9 @@ function _getAccPosition(outcomeIndex) {
 }
 
 function _updateAccBalances() {
-  $("#marketPanelAcc").text("Account: "+currentAccount); 
-
+  document.getElementById("marketPanelAcc").innerText = "Account: "+session.getAccount();
   //Get current account SHARE balance
-  getAccBalance(currentAccount, market.positions.collateralYes, market.positions.collateralNo).then((result) => {
+  getAccBalance(session.getAccount(), market.positions.collateralYes, market.positions.collateralNo).then((result) => {
     document.getElementById("YesSharesBalance").innerHTML = "<strong>YES SHARES: </strong>"+Number.parseFloat(web3.utils.fromWei(result[YESINDEX])).toFixed(2);
     document.getElementById("NoSharesBalance").innerHTML = "<strong>NO SHARES: </strong>"+Number.parseFloat(web3.utils.fromWei(result[NOINDEX])).toFixed(2);
     console.log("Yes Balance: ", result[YESINDEX]);
@@ -123,7 +106,7 @@ function _updateAccBalances() {
   }) 
 
     //Get Liquidity provided by current account
-  market.fpmm.getAccLiquidity(currentAccount).then((result) => {
+  market.fpmm.getAccLiquidity(session.getAccount()).then((result) => {
     document.getElementById("marketPanelLPTokens").innerText = "LP Tokens: " + web3.utils.fromWei(result);
   })
 }
@@ -229,28 +212,6 @@ function _removeFunding() {
     _updateMMBalances();
     _updatePrices();
   })
-}
-
-
-function _reportPayouts() {
-  let questionId = document.getElementById("reportPayouts_questionId").value;
-  let conditionId = document.getElementById("reportPayouts_conditionId").value;
-  let payoutYes= document.getElementById("reportPayouts_payoutYes").value;
-  let payoutNo= document.getElementById("reportPayouts_payoutNo").value;
-  let payouts = [0,0];
-  payouts[YESINDEX] = payoutYes;
-  payouts[NOINDEX] = payoutNo;
-
-  reportPayouts(questionId, payouts)
-  .then(res => {
-    console.log(res)
-    resolveMarket(conditionId)
-    .then(res => {
-      console.log(res);
-      _loadMarkets();
-    })
-  })
-
 }
 
 function _redeemPositions(){

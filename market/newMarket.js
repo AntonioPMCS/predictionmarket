@@ -1,40 +1,12 @@
 var fpmmFactory;
 
-$(document).ready(async () => {
-  
-    try {
-      web3 = await enableEthereum();
-      console.log(">>> Connected to Metamask<br>");
-  
-      let network = await getNetwork(); 
-      $("#output").append(">>> Connected to "+network+"<br>");
-      console.log(">>> Connected to "+network);
-  
-      rinkebyAccount = await getAccount();
-      console.log("Account: "+rinkebyAccount);
-      document.getElementById("connectedAddress").innerHTML = rinkebyAccount;
-      document.getElementById("connectBtn").style.display="none";
-      document.getElementById("newMarketOracle").value =  rinkebyAccount;
-  
-    } catch (err) {
-      alert(err+" Correct the issue and refresh the page.");
-      throw(Error(err));
-    }
-
-    loadToken().then((res) => { 
-        console.log("Logged acount LOCK balance: ", web3.utils.fromWei(res));
-    })
-
-    loadCT().then((res) => {
-        console.log("ctContractAddress: "+CTCONTRACTRINKEBY);
-    })
-
-    fpmmFactory = loadMMF();
+// Page init is called at $document.onReady by connectionBar.js
+function pageInit() {
+    session.loadMMF();
+    fpmmFactory = session.getMMF();
     console.log("MarketMakerFactory loaded: ", fpmmFactory.contract);   
-
     document.getElementById("newMarketLiquidity").value = '10000';
-})
-
+}
 
 function _createMarket() {
     let market = {
@@ -52,7 +24,7 @@ function _createMarket() {
     }
 
     //conditionalTokens.js: function openMarket(questionId, oracleAccount) 
-    openMarket(market.questionId, rinkebyAccount)
+    openMarket(market.questionId, session.getAccount())
     .then((condition) => {
         market.id = condition.conditionId;
         market.yesPositionID = condition.positions.yes;
@@ -65,13 +37,13 @@ function _createMarket() {
             market.marketMakerAddress = receipt.events.FixedProductMarketMakerCreation.returnValues.fixedProductMarketMaker//TODO: Get from receipt
             console.log("Logging Market...")
             console.log(market)
-            addMarket(market)
+            DB.addMarket(market)
             .then(res => {
-                //window.location.href = "/index.html";
                 console.log(res);
+                //window.location.href = ".../index.html";
+
             })
             .catch((err) => {
-                
                 // Catch code warns the user the market was not added to the database
                 throw(err)
             })

@@ -1,18 +1,8 @@
-
-var currentAccount;
-var tokenContract;
-var ctcontract;
-var mmContract;
-var fpmmFactory;
-
-
 class Session {
   constructor() {
     try {
       if (typeof window.ethereum !== "undefined") {
         window.web3 = new Web3(window.ethereum);
-        ethereum.on('chainChanged', this.handleChainChanged);
-        ethereum.on('accountsChanged', this.handleAccountsChanged); 
         this.loadToken(); 
         this.loadCT();
       } else {
@@ -29,11 +19,11 @@ class Session {
     // Ask the user to connect an Account
     window.ethereum.request({ method: 'eth_requestAccounts' })
     .then((accounts) => { 
-      this.handleAccountsChanged(accounts)
+      this.setAccount(accounts)
       // Fetch the connected account Network ID
       window.ethereum.request({ method: 'eth_chainId' })
       .then((chainId) => { 
-        this.handleChainChanged(chainId)
+        this.setChain(chainId)
         callback.bind(this)();
       })  
       .catch((error => {
@@ -70,19 +60,29 @@ class Session {
     this.CTContract = new web3.eth.Contract(conditionalTokensABI, CTCONTRACTRINKEBY);
   }
 
-  ///////////// ----------- Setters ------------ \\\\\\\\\\\\\\\
-
-  handleAccountsChanged(accounts){
-    if (accounts.length === 0) {
-      // MetaMask is locked or the user has not connected any accounts
-      console.log('Please connect to MetaMask.');
-    } else if (accounts[0] !== currentAccount) {
-      console.log(this)
-      this.currentAccount = accounts[0];
-    }
+    /** 
+   * @notice: Market Makers (MM) facilitate trades by owning both collateral and conditional tokens. 
+   *          Each Market has its own. 
+   **/
+  loadMM(mmAddress) {
+      this.mmContract = new web3.eth.Contract(fpmmABI, mmAddress);
   }
 
-  handleChainChanged(chainId) {
+  /** 
+   * @notice: The Market Maker Factory (MMF) contract has a method to create Market Makers
+   **/
+  loadMMF() {
+    this.mmFactoryContract = new MarketMakerFactory(FPMMFactoryABI, FPMMFACTORYCONTRACT)
+  }
+   
+
+  ///////////// ----------- Setters ------------ \\\\\\\\\\\\\\\
+
+  setAccount(accounts) {
+    this.currentAccount = accounts[0];
+  }
+
+  setChain(chainId) {
     console.log("ChainId: "+chainId)
     switch (chainId) {
       case "0x1":
@@ -118,25 +118,15 @@ class Session {
   }
 
   getCT() {
-    return this.CTContract();
+    return this.CTContract;
+  }
+
+  getMMF() {
+    return this.mmFactoryContract;
+  }
+
+  getMM() {
+    return this.mmContract;
   }
   ///// ------------------------------------------------------------- \\\\
 }
-
-
-
-/** 
- * @notice: The Market Maker Factory (MMF) contract has a method to create Market Makers
- **/
-function loadMMF() {
-  return new MarketMakerFactory(FPMMFactoryABI, FPMMFACTORYCONTRACT)
-}
-
-/** 
- * @notice: Market Makers (MM) facilitate trades by owning both collateral and conditional tokens. 
- *          Each Market has its own. 
- **/
- function loadMM(mmAddress) {
-   mmContract = new web3.eth.Contract(fpmmABI, mmAddress);
- }
- 

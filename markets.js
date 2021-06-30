@@ -1,29 +1,11 @@
-$(document).ready(async () => {
-  
-   session = new Session();
-   // This design pattern overcomes the limitations of not being able to 
-   // run async operations inside an object's constructor
-   session.init(() => {
-     console.log("Account: "+session.getAccount());
-     console.log("Chain: "+session.getChain());
- 
-     document.getElementById("connectedAddress").innerHTML = session.getAccount();
-     document.getElementById("connectBtn").style.display="none";
- 
-     $("#output").append(">>> Connected to "+session.getChain()+"<br>");
-     document.getElementById("connectedNetwork").innerHTML = session.getChain();
-
-     session.getTokenContract().methods.balanceOf(session.getAccount()).call()
-     .then(res => { console.log(`Logged account ${TOKENNAME} balance: `, web3.utils.fromWei(res))})
-   });
-
+// Page init is called at $document.onReady by connectionBar.js
+function pageInit() {
    _loadMarkets();
- 
- })
+}
 
 
 function _loadMarkets () {
-   getMarkets()
+   DB.getMarkets()
    .then((response) => {
       let markets = response.data.data;
       if (markets=== undefined) {
@@ -44,22 +26,24 @@ function _loadMarkets () {
     var newBody = document.createElement('tbody');
 
     for (i=0; i < chosenMarkets.length; i++) {
+        let market = chosenMarkets[i];
         var rowNode = document.createElement("tr");
         // Market Title 
         var cellNode = document.createElement("td");
         var anchorNode = document.createElement("a");
-        anchorNode.setAttribute("href", "/market/market.html?conditionId="+chosenMarkets[i].id
-                                 +"&questionId="+chosenMarkets[i].questionId
-                                 +"&fpmm="+chosenMarkets[i].marketMakerAddress
-                                 +"&yesPositionId="+chosenMarkets[i].yesPositionID
-                                 +"&noPositionId="+chosenMarkets[i].noPositionID)
-        var textNode = document.createTextNode(chosenMarkets[i].title);
+        anchorNode.setAttribute("href", "/market/market.html?conditionId="+market.id
+                                 +"&questionId="+market.questionId
+                                 +"&title="+market.title
+                                 +"&fpmm="+market.marketMakerAddress
+                                 +"&yesPositionId="+market.yesPositionID
+                                 +"&noPositionId="+market.noPositionID)
+        var textNode = document.createTextNode(market.title);
         anchorNode.appendChild(textNode) 
         cellNode.appendChild(anchorNode);
         rowNode.appendChild(cellNode);
 
         // Market Liquidity
-        let mm = new MarketMaker(fpmmABI, chosenMarkets[i].marketMakerAddress)
+        let mm = new MarketMaker(fpmmABI, market.marketMakerAddress)
         // TODO: Add the created MM to a MM Manager who tracks every MM instance
         result = await mm.totalSupply();
         cellNode = document.createElement("td");
@@ -82,9 +66,34 @@ function _loadMarkets () {
         rowNode.appendChild(cellNode);
         // Expiration
         cellNode = document.createElement("td");
-        console.log(chosenMarkets[i])
-        textNode = document.createTextNode(chosenMarkets[i].endDate);
+        console.log(market)
+        textNode = document.createTextNode(market.endDate);
         cellNode.appendChild(textNode);
+        rowNode.appendChild(cellNode);
+        // Operations
+        // --- EDIT
+        cellNode = document.createElement("td");
+        anchorNode = document.createElement("a");
+        anchorNode.setAttribute("href", "/market/edit.html?conditionId="+market.id
+                                 +"&title="+market.title
+                                 +"&desc="+market.description
+                                 +"&res="+market.resolutionSource
+                                 +"&state="+market.state
+                                 +"&enddate="+market.endDate);
+        textNode = document.createTextNode("EDIT");
+        anchorNode.appendChild(textNode) 
+        cellNode.appendChild(anchorNode);
+        rowNode.appendChild(cellNode);
+        // --- CLOSE
+        cellNode = document.createElement("td");
+        anchorNode = document.createElement("a");
+        anchorNode.setAttribute("href", "/market/resolve.html?conditionId="+market.id
+                                 +"&title="+market.title
+                                 +"&questionId="+market.questionId
+                                 +"&oracle="+market.oracle);
+        textNode = document.createTextNode("RESOLVE");
+        anchorNode.appendChild(textNode) 
+        cellNode.appendChild(anchorNode);
         rowNode.appendChild(cellNode);
 
         newBody.appendChild(rowNode);

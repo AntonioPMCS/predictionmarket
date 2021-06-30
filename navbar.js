@@ -8,20 +8,15 @@ function composeNavbar() {
 
    let navbar = {
       index: {
-         'href': '../index.html',
+         'href': '/index.html',
          'class': 'nav-item nav-link',
          'label':'Markets'
       },
       new: {
-         'href': './market/new.html',
+         'href': '../market/new.html',
          'class': 'nav-item nav-link',
          'label':'New'
       },
-      update: {
-         'href': '/market/update.html',
-         'class': 'nav-item nav-link',
-         'label':'Update'
-      }
    }
  
    switch (page) {
@@ -31,8 +26,6 @@ function composeNavbar() {
       case "new.html":
          navbar.new.class+=' active';
          break;
-      case "update.html":
-         navbar.update.class+=' active';
       default:
          break;
    }
@@ -42,11 +35,8 @@ function composeNavbar() {
 function printNavbar(navbar) {
    let links="";
    for (const ele in navbar) {
-      console.log(navbar[ele])
       let item = navbar[ele];
-      console.log(item.class)
       links+=`<a href=${item.href} class="${item.class}">${item.label}</a>`
    }
-   console.log(links)
    return links
 }

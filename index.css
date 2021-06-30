@@ -22,12 +22,12 @@ body {
    margin-bottom:1em;
 }
 
-.connection {
+#connectionBar {
    border-bottom:#d9d0c3 solid 1px;
    padding-left:0.5em;
 }
 
-.connection span, a {
+#connectionBar span, a {
    padding-left:1em;
 }
 
@@ -48,10 +48,12 @@ body {
    border: 1px solid black;
    margin-top: 1rem;
    padding: 15px;
+   margin-bottom: 1em;
 }
 
-.contract-panel input, textarea {
+.contract-panel input, select, textarea {
    width:75%;
+   margin-bottom:0.5em;
 }
 
 .contract-panel h6 {
@@ -113,7 +115,7 @@ body {
    text-align:left;
    font-weight:bold;
    font-size:1em;
-   margin-bottom:0.3rem;
+   margin-bottom:0.2rem;
    padding-left:0.5em;
 }
 

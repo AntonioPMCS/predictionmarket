@@ -10,36 +10,45 @@ function openMarket(questionId, oracleAccount) {
 
   //solidity function signature: prepareCondition(address oracle, bytes32 questionId, uint outcomeSlotCount) 
   // The ascii representation of the questionId must have a maximum size of 32 bytes
-  return ctcontract.methods.prepareCondition(oracleAccount, questionId, 2)
-  .send({from: rinkebyAccount, gas: 6500000})
-  .then((receipt) => {
-    let retValues = receipt.events.ConditionPreparation.returnValues;
-    console.log(retValues);
-    condition.conditionId = retValues.conditionId;
-    condition.questionId = retValues.questionId;
+  return session.getCT().methods.prepareCondition(oracleAccount, questionId, 2)
+  .estimateGas({from: session.getAccount()})
+  .then(gasEstimate => {
+    return session.getCT().methods.prepareCondition(oracleAccount, questionId, 2)
+    .send({from: session.getAccount(), gas: gasEstimate})
+    .then((receipt) => {
+      let retValues = receipt.events.ConditionPreparation.returnValues;
+      console.log(retValues);
+      condition.conditionId = retValues.conditionId;
+      condition.questionId = retValues.questionId;
 
-    return ctcontract.methods.getCollectionId(BYTES32ZERO, retValues.conditionId, 2).call() // 2 is the index set for Yes wins outcome
-    .then((collectionId) => {
-      condition.collections.yes = collectionId;
-      console.log("YES collection ID = "+collectionId);
-      return ctcontract.methods.getPositionId(COLLATERALTOKENCONTRACT, collectionId).call()
-      .then((position) => {
-        condition.positions.yes = position;
+      return session.getCT().methods.getCollectionId(BYTES32ZERO, retValues.conditionId, 2).call() // 2 is the index set for Yes wins outcome
+      .then((collectionId) => {
+        condition.collections.yes = collectionId;
+        console.log("YES collection ID = "+collectionId);
 
-        return ctcontract.methods.getCollectionId(BYTES32ZERO, retValues.conditionId, 1).call() // 1 is the index set for No wins outcome
-        .then((collectionId) => {
-          console.log("NO collection ID = "+collectionId);
-          condition.collections.no = collectionId;
-          return ctcontract.methods.getPositionId(COLLATERALTOKENCONTRACT, collectionId).call()
-          .then((position) => {
-            condition.positions.no = position;
-            return condition;
-          })
-        }) 
-      })
-    }) 
-    
+        return session.getCT().methods.getPositionId(COLLATERALTOKENCONTRACT, collectionId).call()
+        .then((position) => {
+          condition.positions.yes = position;
+
+          return session.getCT().methods.getCollectionId(BYTES32ZERO, retValues.conditionId, 1).call() // 1 is the index set for No wins outcome
+          .then((collectionId) => {
+            console.log("NO collection ID = "+collectionId);
+            condition.collections.no = collectionId;
+
+            return session.getCT().methods.getPositionId(COLLATERALTOKENCONTRACT, collectionId).call()
+            .then((position) => {
+              condition.positions.no = position;
+              
+              return condition;
+            })
+          }) 
+        })
+      }) 
+    })
+
   })
+  
+  
 }
 
 
@@ -53,8 +62,8 @@ function openMarket(questionId, oracleAccount) {
 
 function _outcomeSlotCount() {
   console.log("Inside outcomeSlotCount: ", document.getElementById("getOutcomeSlotCount_conditionId").value)
-  ctcontract.methods.getOutcomeSlotCount(document.getElementById("getOutcomeSlotCount_conditionId").value)
-  .call({from: rinkebyAccount})
+  session.getCT().methods.getOutcomeSlotCount(document.getElementById("getOutcomeSlotCount_conditionId").value)
+  .call({from: session.getAccount()})
   .then((result) => {
     $("#output").prepend(">>> outcomeSlotCount: "+result+"<br>");
   })
@@ -62,8 +71,8 @@ function _outcomeSlotCount() {
 
 function _balanceOfBatch() {
   console.log(document.getElementById("balanceOfBatch_addresses").value.split(','));
-  ctcontract.methods.balanceOfBatch(document.getElementById("balanceOfBatch_addresses").value.split(','), document.getElementById("balanceOfBatch_positions").value.split(','))
-  .call({from: rinkebyAccount})
+  session.getCT().methods.balanceOfBatch(document.getElementById("balanceOfBatch_addresses").value.split(','), document.getElementById("balanceOfBatch_positions").value.split(','))
+  .call({from: session.getAccount()})
   .then((result) => {
     console.log(result);
     $("#output").prepend(">>> balaceOfBatch (YES): "+web3.utils.fromWei(result[YESINDEX])+"<br>");
@@ -74,8 +83,8 @@ function _balanceOfBatch() {
 function getPositionId() {
   collectionId = document.getElementById("getPositionId_collectionId").value;
   collateralAddress = document.getElementById("getPositionId_collateralAddress").value;
-  ctcontract.methods.getPositionId(collateralAddress, collectionId)
-  .call({from: rinkebyAccount})
+  session.getCT().methods.getPositionId(collateralAddress, collectionId)
+  .call({from: session.getAccount()})
   .then(res => {
     console.log(res);
   })
@@ -94,19 +103,28 @@ function getAccBalance(account, yesPositionId, noPositionId) {
   let positionIds = [0,0];
   positionIds[YESINDEX] = yesPositionId;
   positionIds[NOINDEX] = noPositionId;
-  return ctcontract.methods.balanceOfBatch([account, account], positionIds).call({from: rinkebyAccount})
+  return session.getCT().methods.balanceOfBatch([account, account], positionIds).call({from: session.getAccount()})
 }
 
 function getAccPosition(account, positionId) {
-  return ctcontract.methods.balanceOf(account, positionId).call({from: rinkebyAccount})
+  return session.getCT().methods.balanceOf(account, positionId).call({from: session.getAccount()})
 }
 
 function reportPayouts(questionId, payouts) {
-  return ctcontract.methods.reportPayouts(questionId, payouts)
-          .send({from: rinkebyAccount, gas: 3000000})
+  return session.getCT().methods.reportPayouts(questionId, payouts)
+  .estimateGas({from: session.getAccount()})
+  .then(gasEstimate => {
+    return session.getCT().methods.reportPayouts(questionId, payouts)
+    .send({from: session.getAccount(), gas: gasEstimate})
+  })
+  
 }
 
 function redeemPositions(collateralAddress = COLLATERALTOKENCONTRACT, parentCollectionId = BYTES32ZERO, conditionId, indexSets = [1,2]) {
-  return ctcontract.methods.redeemPositions(collateralAddress, parentCollectionId, conditionId, indexSets)
-  .send({from: rinkebyAccount, gas: 6500000})
+  return session.getCT().methods.redeemPositions(collateralAddress, parentCollectionId, conditionId, indexSets)
+  .estimateGas({from: session.getAccount()})
+  .then(gasEstimate => {
+    return session.getCT().methods.redeemPositions(collateralAddress, parentCollectionId, conditionId, indexSets)
+    .send({from: session.getAccount(), gas: gasEstimate})
+  })
 }

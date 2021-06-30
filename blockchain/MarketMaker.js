@@ -46,15 +46,23 @@ class MarketMaker extends Contract {
      * @returns {string} An estimation of how many shares that amount of currency can buy
     */
     buy(outcomeIndex, amount) {
-        return tokenContract.methods.approve(this.contract._address, web3.utils.toWei(amount))
-        .send({from: session.getAccount(), gas: 300000})
-        .then((result) => {
-          console.log(result);
-          console.log("Form input number: ", amount)
-          return this.contract.methods.buy(web3.utils.toWei(amount), outcomeIndex, 1) //1 is minimum tokens to buy
-          .send({from: session.getAccount(), gas: 3000000})
+        return session.getTokenContract().methods.approve(this.contract._address, web3.utils.toWei(amount))
+        .estimateGas({from: session.getAccount()})
+        .then(gasEstimate => {
+            return session.getTokenContract().methods.approve(this.contract._address, web3.utils.toWei(amount))
+            .send({from: session.getAccount(), gas: gasEstimate})
+            .then((result) => {
+                console.log(result);
+                console.log("Form input number: ", amount)
+                return this.contract.methods.buy(web3.utils.toWei(amount), outcomeIndex, 1) //1 is minimum tokens to buy
+                .estimateGas({from: session.getAccount()})
+                .then(gasEstimate => {
+                    return this.contract.methods.buy(web3.utils.toWei(amount), outcomeIndex, 1) //1 is minimum tokens to buy
+                    .send({from: session.getAccount(), gas: gasEstimate})
+                })
+            })
         })
-      }
+    }
 
     /**
      * 
@@ -79,15 +87,14 @@ class MarketMaker extends Contract {
         let positionIds = [0,0];
         positionIds[YESINDEX] = market.positions.collateralYes;
         positionIds[NOINDEX] = market.positions.collateralNo;
-        return ctcontract.methods.balanceOfBatch([this.contract._address,this.contract._address],positionIds)
+        return session.getCT().methods.balanceOfBatch([this.contract._address,this.contract._address],positionIds)
         .call( {from: session.getAccount() })
         .then(result => {
             let balancesSMALL = result.map(x => web3.utils.fromWei(x));
             let sellReserves = balancesSMALL[outcomeIndex]
             let otherReserves = balancesSMALL[Math.abs(outcomeIndex - 1)]
-            //console.log("Sell Reserves: ", sellReserves, "Other reserves: ", otherReserves);
             function f(x) { return (sellReserves*otherReserves + (otherReserves-x)*x + (-sellReserves-amount)*(otherReserves-x))}
-            return Math.round(newtonRaphson(f, 0) * 10000) / 10000; //Rounding. See Github issue #6
+            return Math.round(newtonRaphson(f, 0) * 10000) / 10000; //Rounding might cause errors. TODO: implement newtonRaphson with bignumbers.js
         })
     }
 
@@ -96,12 +103,21 @@ class MarketMaker extends Contract {
      * @param returnAmount How much currency the user expects to receive by selling the shares
      */
     sell(outcomeIndex, returnAmount) {
-        return ctcontract.methods.setApprovalForAll(this.contract._address, true)
-        .send({from: session.getAccount(), gas: 3000000})
-        .then(result => {
-            return this.contract.methods.sell(web3.utils.toWei(returnAmount), outcomeIndex, web3.utils.toWei(returnAmount)+web3.utils.toWei('1'))
-            .send({from: session.getAccount(), gas: 3000000})
-        });
+        return session.getCT().methods.setApprovalForAll(this.contract._address, true)
+        .estimateGas({from: session.getAccount()})
+        .then(gasEstimate => {
+            return session.getCT().methods.setApprovalForAll(this.contract._address, true)
+            .send({from: session.getAccount(), gas: gasEstimate})
+            .then(result => {
+                return this.contract.methods.sell(web3.utils.toWei(returnAmount), outcomeIndex, web3.utils.toWei(returnAmount)+web3.utils.toWei('1'))
+                .estimateGas({from: session.getAccount()})
+                .then(gasEstimate => {
+                    return this.contract.methods.sell(web3.utils.toWei(returnAmount), outcomeIndex, web3.utils.toWei(returnAmount)+web3.utils.toWei('1'))
+                    .send({from: session.getAccount(), gas: gasEstimate})
+                })
+            });
+        })
+        
     }
 
 
@@ -109,10 +125,20 @@ class MarketMaker extends Contract {
      * @param amount The amount of Liquidity (in tokens) being provided to the AMM
      */
     addFunding(amount) {
-        return tokenContract.methods.approve(this.contract._address, amount)
-            .send({from: session.getAccount(), gas: 300000})
+        return session.getTokenContract().methods.approve(this.contract._address, amount)
+        .estimateGas({from: session.getAccount()})
+        .then(gasEstimate => {
+            return session.getTokenContract().methods.approve(this.contract._address, amount)
+            .send({from: session.getAccount(), gas: gasEstimate})
             .then(() => {
-                return this.contract.methods.addFunding(amount, []).send({from: session.getAccount(), gas: 650000})
+
+                return this.contract.methods.addFunding(amount, [])
+                .estimateGas({from: session.getAccount()})
+                .then(gasEstimate => {
+                    return this.contract.methods.addFunding(amount, [])
+                    .send({from: session.getAccount(), gas: gasEstimate})
+                })
+            })
         })
     }
 
@@ -123,18 +149,28 @@ class MarketMaker extends Contract {
      */
     removeFunding(amount) {
         // Get the shares back from the market maker
-        return this.contract.methods.removeFunding(amount).send({from: session.getAccount(), gas: 3000000})
-        .then(receipt => {
-          console.log(receipt);
-          // Get the conditionId from the marketMaker itself avoids errors
-          return this.contract.methods.conditionIds(0).call()
-          .then(conditionId => {  
-            // Converts the senders' shares back to LOCK (collateral)
-            basicPartition = [1,2] // See https://docs.gnosis.io/conditionaltokens/docs/ctftutorial07/
-            return ctcontract.methods.mergePositions(COLLATERALTOKENCONTRACT, BYTES32ZERO, conditionId, basicPartition, amount)
-              .send({from: session.getAccount(), gas: 3000000})
-           })
+        return  this.contract.methods.removeFunding(amount)
+        .estimateGas({from: session.getAccount()})
+        .then(gasEstimate => {
+            return this.contract.methods.removeFunding(amount)
+            .send({from: session.getAccount(), gas: gasEstimate})
+            .then(receipt => {
+                console.log(receipt);
+                // Get the conditionId from the marketMaker itself avoids errors
+                return this.contract.methods.conditionIds(0).call()
+                .then(conditionId => {  
+                    // Converts the senders' shares back to LOCK (collateral)
+                    var basicPartition = [1,2] // See https://docs.gnosis.io/conditionaltokens/docs/ctftutorial07/
+                    
+                    return session.getCT().methods.mergePositions(COLLATERALTOKENCONTRACT, BYTES32ZERO, conditionId, basicPartition, amount)
+                    .estimateGas({from: session.getAccount()})
+                    .then(gasEstimate => {
+                        return session.getCT().methods.mergePositions(COLLATERALTOKENCONTRACT, BYTES32ZERO, conditionId, basicPartition, amount)
+                        .send({from: session.getAccount(), gas: gasEstimate})
+                    })   
+                })
+            })
         })
-      }
+    }
 }
     
