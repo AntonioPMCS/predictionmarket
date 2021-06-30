@@ -24,6 +24,7 @@ export default class CreateMarkets1609281880193 implements MigrationInterface {
           { name: 'yesPositionID', type: 'varchar' },
           { name: 'noPositionID', type: 'varchar' },
           { name: 'questionId', type: 'varchar' },
+          { name: 'oracle', type: 'varchar' },
           { name: 'tradeVolume', type: 'float8', default: 0 },
         ],
       }),

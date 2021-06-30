@@ -40,6 +40,9 @@ class Market {
   @Column()
   questionId: string;
 
+  @Column()
+  oracle: string;
+
   @Column('float8')
   tradeVolume: number;
 }

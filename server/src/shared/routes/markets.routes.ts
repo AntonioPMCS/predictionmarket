@@ -52,6 +52,7 @@ marketsRouters.post(
       yesPositionID: Joi.string().required(),
       noPositionID: Joi.string().required(),
       questionId: Joi.string().required(),
+      oracle: Joi.string().required(),
       tradeVolume: Joi.number(),
     },
   }),
