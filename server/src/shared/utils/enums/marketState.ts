@@ -1,0 +1,6 @@
+export enum MARKET_STATES {
+  OPEN = 'OPEN',
+  CLOSED = 'CLOSED',
+  RESOLVING = 'RESOLVING',
+  INVALID = 'INVALID',
+}
