@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" data-is-home="false" data-is-mobile="false" data-supports-vr="false" data-supports-touch="false">
+
+<head>
+  <title>PreSaga Administrator Panel</title>
+  <link rel="shortcut icon" href="../UN_icon.jpg" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="../index.css">
+</head>
+
+<body class='container'>
+
+  <section class="header">
+    <div class="headerTitle">
+      <h1 style="padding-left:0.5em;"> PreSaga BETA</h1>
+      <div id='connectionBar'>
+      </div>
+      <nav class="navbar navbar-expand-md navbar-light">
+        <div id="navbar" class="navbar-nav">
+          <script language="javascript" type="text/javascript" src="../navbar.js"></script>
+        </div>
+      </nav>
+    </div>
+  </section>
+  
+  <section class='content'>
+    <div class='web3-interface' style="width:50%; text-align:center">
+      <div class="newMarketForm contract-panel">
+        <h2>New Market</h2>
+          <label for="MarketQuestion">Question:</label><br>
+          <input type="text" maxlength="32" id="newMarketQuestion" name="MarketQuestion"><br>
+          <label for="MarketTitle">Title:</label><br>
+          <input type="text" id="newMarketTitle" name="MarketTitle"><br>
+          <label for="MarketDesc">Description:</label><br>
+          <textarea id="newMarketDesc" name="MarketDesc"></textarea><br>
+          <label for="MarketRes">Resolution Source:</label><br>
+          <input type="text" id="newMarketRes" name="MarketRes"><br>
+          <label for="MarketOracle">Oracle Address:</label><br>
+          <input type="text" id="newMarketOracle" name="MarketOracle"><br>
+          <label for="MarketLiquidity">Initial Liquidity:</label><br>
+          <input type="text" id="newMarketLiquidity" name="MarketLiquidity"><br>
+          <label for="MarketEndDate">End Date:</label><br>
+          <input type="text" id="newMarketEndDate" value="Wed July 30 2021 23:59:59 GMT+0000 (Western European Standard Time)" name="MarketEndDate"><br>
+          <a href='javascript:;' onclick="_createMarket()" class="btn btn-primary">Create Market</a>
+      </div>
+    </div>
+  </section>
+        
+</body>
+
+
+<!--Import web3, jquery and our app-->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script language="javascript" type="text/javascript" src="../blockchain/abi/fpmmfactory_abi.js"></script>
+<script language="javascript" type="text/javascript" src="../blockchain/abi/conditionaltokens_abi.js"></script>
+<script language="javascript" type="text/javascript" src="../blockchain/abi/collateraltoken_abi.js"></script>
+<script language="javascript" type="text/javascript" src="../blockchain/abi/fpmm_abi.js"></script>
+<script language="javascript" type="text/javascript" src="../Session.js"></script>
+<script language="javascript" type="text/javascript" src="../blockchain/conditionalTokens.js"></script>
+<script language="javascript" type="text/javascript" src="../blockchain/Contract.js"></script>
+<script language="javascript" type="text/javascript" src="../blockchain/MarketMakerFactory.js"></script>
+<script language="javascript" type="text/javascript" src="../constants.js"></script>
+<script language="javascript" type="text/javascript" src="../db/DB.js"></script>
+<script language="javascript" type="text/javascript" src="../node_modules/big.js/big.js"></script>
+<script language="javascript" type="text/javascript" src="../math/bignumber.min.js"></script>
+<script language="javascript" type="text/javascript" src="../math/newton-raphson-method.js"></script>
+<script src="./newMarket.js"></script> 
+<script language="javascript" type="text/javascript" src="../connectionBar.js"></script>
+
+</html>
